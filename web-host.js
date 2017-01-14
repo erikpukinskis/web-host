@@ -11,6 +11,7 @@ module.exports = library.export(
         "width": "440px",
         "padding": "10px",
         "border": "10px solid #eee",
+        "margin-top": "30px",
       })
     )
 
@@ -42,6 +43,14 @@ module.exports = library.export(
             }
           )
 
+          voxels = element(
+            ".voxels",
+            element.style({
+              "margin-top": "90px"
+            }),
+            voxels
+          )
+          
           bridge.requestHandler(voxels)(request, response)
         }
       )
