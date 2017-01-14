@@ -1,0 +1,17 @@
+{
+  "name": "web-host",
+  "version": "0.0.0",
+  "description": "A home page for hosting multiple apps on one server",
+  "main": "web-host.js",
+  "dependencies": {
+    "module-library": "*",
+    "web-site": "*",
+    "browser-bridge": "*",
+    "web-element": "*",
+    "with-nearby-modules": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erikpukinskis/web-host.git"
+  }
+}
