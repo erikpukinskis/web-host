@@ -12,6 +12,7 @@ module.exports = library.export(
         "padding": "10px",
         "border": "10px solid #eee",
         "margin-top": "30px",
+        "margin-bottom": "500px",
       })
     )
 
