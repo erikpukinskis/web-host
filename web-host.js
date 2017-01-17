@@ -16,7 +16,7 @@ module.exports = library.export(
       })
     )
 
-    function webHost(port) {
+    function webHost(path, port) {
 
       var host = new WebSite()
 
@@ -29,7 +29,7 @@ module.exports = library.export(
         }
       )
 
-      host.addRoute("get", "/",
+      host.addRoute("get", path||"/",
         function(request, response) {
           bridge = new BrowserBridge()
           bridge.addToHead(element.stylesheet(voxelTemplate))
