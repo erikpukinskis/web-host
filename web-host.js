@@ -2,8 +2,8 @@ var library = require("module-library")(require)
 
 module.exports = library.export(
   "web-host",
-  ["browser-bridge", "web-site", "with-nearby-modules", "web-element"],
-  function(BrowserBridge, WebSite, withNearbyModules, element) {
+  ["web-site", "browser-bridge", "web-element"],
+  function(WebSite, BrowserBridge, element) {
 
     var voxelTemplate = element.template.container(
       ".voxel",
@@ -12,55 +12,68 @@ module.exports = library.export(
         "padding": "10px",
         "border": "10px solid #eee",
         "margin-top": "30px",
-        "margin-bottom": "500px",
       })
     )
 
-    function webHost(path, port) {
+    var host = new WebSite()
 
-      var host = new WebSite()
 
-      withNearbyModules.aModuleAppeared(
-        "web-site",
-        function() {
-          var appServer = new WebSite()
-          host.use(appServer.app)
-          return appServer
-        }
-      )
-
-      host.addRoute("get", path||"/",
-        function(request, response) {
-          bridge = new BrowserBridge()
-          bridge.addToHead(element.stylesheet(voxelTemplate))
-
-          var voxels = []
-          withNearbyModules.aModuleAppeared(
-            "browser-bridge",
-            function() {
-              var partial = bridge.partial()
-              voxels.push(voxelTemplate(partial))
-              return partial
-            }
-          )
-
-          voxels = element(
-            ".voxels",
-            element.style({
-              "margin-top": "90px"
-            }),
-            voxels
-          )
-          
-          bridge.requestHandler(voxels)(request, response)
-        }
-      )
-
-      host.start(port || process.env.PORT || 1413)
+    function onSite(callback) {
+      var appServer = new WebSite()
+      host.use(appServer.app)
+      callback(appServer)
     }
 
-    return webHost
+    var requestCallbacks = []
+
+    function onRequest(callback) {
+      requestCallbacks.push(callback)
+    }
+
+    host.addRoute("get", "/",
+      function(request, response) {
+
+        bridge = new BrowserBridge()
+        bridge.addToHead(element.stylesheet(voxelTemplate))
+
+        var voxels = []
+
+        function getPartial() {
+          var partial = bridge.partial()
+          voxels.push(voxelTemplate(partial))
+          return partial
+        }
+
+        var id = request.params.id
+
+        requestCallbacks.forEach(
+          function(callback) {
+            callback(getPartial)
+          }
+        )
+
+        body = element(
+          ".voxels",
+          element.style({
+            "margin-top": "90px",
+            "margin-bottom": "500px",
+          }),
+          voxels
+        )
+        
+        var handler = bridge.requestHandler(body)
+
+        handler(request, response)
+      }
+    )
+
+    host.start(process.env.PORT || 1413)
+
+    return {
+      onSite: onSite,
+      onRequest: onRequest,
+    }
+
   }
 )
-
 
