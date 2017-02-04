@@ -9,7 +9,7 @@ module.exports = library.export(
       ".voxel",
       element.style({
         "padding": "10px",
-        "border": "10px solid #eee",
+        "border": "10px solid #e6e7ff",
         "margin-top": "30px",
       })
     )
