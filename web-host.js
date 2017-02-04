@@ -8,7 +8,6 @@ module.exports = library.export(
     var voxelTemplate = element.template.container(
       ".voxel",
       element.style({
-        "max-width": "440px",
         "padding": "10px",
         "border": "10px solid #eee",
         "margin-top": "30px",
