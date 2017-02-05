@@ -1,6 +1,6 @@
 {
   "name": "web-host",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "A home page for hosting multiple apps on one server",
   "main": "web-host.js",
   "dependencies": {
