@@ -4,16 +4,7 @@ module.exports = library.export(
   "web-host",
   ["web-site", "browser-bridge", "web-element"],
   function(WebSite, BrowserBridge, element) {
-
-    var voxelTemplate = element.template.container(
-      ".voxel",
-      element.style({
-        "padding": "10px",
-        "border": "10px solid #e6e7ff",
-        "margin-top": "30px",
-      })
-    )
-
+    
     var host = new WebSite()
 
 
@@ -33,13 +24,12 @@ module.exports = library.export(
       function(request, response) {
 
         bridge = new BrowserBridge()
-        bridge.addToHead(element.stylesheet(voxelTemplate))
 
         var voxels = []
 
         function getPartial() {
           var partial = bridge.partial()
-          voxels.push(voxelTemplate(partial))
+          voxels.push(partial)
           return partial
         }
 
