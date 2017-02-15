@@ -33,6 +33,14 @@ module.exports = library.export(
           return partial
         }
 
+        getPartial.defineFunction = goop("defineFunction")
+        getPartial.send = goop("send")
+        getPartial.asap = goop("asap")
+
+        function goop(methodName) {
+          throw new Error("web-host gave you a getBridge function. You did getBridge."+methodName+", but you probably meant to get a bridge:\n        var bridge = getBridge()\n        bridge."+methodName+"(...)\nCommon mistake.")
+        }
+
         var id = request.params.id
 
         requestCallbacks.forEach(
