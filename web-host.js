@@ -17,6 +17,11 @@ module.exports = library.export(
     var requestCallbacks = []
 
     function onRequest(callback) {
+      try {
+        throw new Error("You called web-host.onRequest here:")
+      } catch(e) {
+        callback.calledAtStack = e.stack
+      }
       requestCallbacks.push(callback)
     }
 
@@ -47,7 +52,12 @@ module.exports = library.export(
 
         requestCallbacks.forEach(
           function(callback) {
-            callback(getPartial)
+            try {
+              callback(getPartial)
+            } catch(e) {
+              console.log(callback.calledAtStack)
+              throw(e)
+            }
           }
         )
 
