@@ -6,16 +6,26 @@ library.using(
   function(host, element, Voxel, makeRequest) {
 
     host.onSite(function(site) {
-      site.addRoute("get", "/web-host/partials/code", function(x, response) {
-        response.send("program<br>code<br>goes<br>here")
-      })
+
+      site.addRoute(
+        "get",
+        "/web-host/partials/code",
+        function(x, response) {
+          response.send("program<br>code<br>goes<br>here")
+        }
+      )
+
     })
 
     host.onVoxel(function(channel) {
 
-      var code = channel.left()
+      // Where the code will end up:
 
-      code.send("program<br>code<br>goes<br>here")
+      var code = channel.left()
+      code.send("loading...")
+
+
+      // Button for loading the code:
 
       var buttons = channel.below()
 
@@ -34,16 +44,26 @@ library.using(
 
       var showSourceButton = element(
         "button",
-        element.style({
-          "padding": "10px",
-          "font-size": "1em",
-          "border": "0",
-        }),
         {onclick: code.toggle().withArgs(loadCode).evalable()},
         "Show source"
       )
 
+      channel.addToHead(
+        element.stylesheet(
+          element.style("button", {
+            "padding": "10px",
+            "font-size": "1em",
+            "border": "0",
+            "background": "#e91e63",
+            "color": "white",
+          })
+        )
+      )
+
       buttons.send(showSourceButton)
+
+
+      // Main column content:
 
       var pitch = channel.below()
       pitch.send([
@@ -52,9 +72,11 @@ library.using(
       ])
 
 
-      channel.send()
-    })
+      // Finish the request:
 
+      channel.send()
+
+    })
 
   }
 )

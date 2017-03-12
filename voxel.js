@@ -157,7 +157,6 @@ module.exports = library.export(
 
     var stylesheet = element.stylesheet([
       element.style("body", {
-        "font-family": "sans-serif",
         "margin": "0",
         "padding": "0",
       }),
@@ -177,11 +176,6 @@ module.exports = library.export(
         }
       }),
 
-      element.style(".voxel-place-holder", {
-        "position": "\"relative\"",
-      }),
-
-
       element.style(".voxel", {
         "position": "relative",
         "z-index": "1",
@@ -191,8 +185,6 @@ module.exports = library.export(
         "float": "left",
         "width": "80%",
         "transition": "margin-left "+speed+", margin-right "+speed+", opacity "+speed,
-        "background": "black",
-        "color": "white",
         "opacity": "0",
         "z-index": "0",
         "display": "none",
