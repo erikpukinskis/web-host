@@ -60,17 +60,8 @@ module.exports = library.export(
             }
           }
         )
-
-        body = element(
-          ".voxels",
-          element.style({
-            "margin-top": "90px",
-            "margin-bottom": "500px",
-          }),
-          voxels
-        )
         
-        var handler = bridge.requestHandler(body)
+        var handler = bridge.requestHandler(voxels)
 
         handler(request, response)
       }
