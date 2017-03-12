@@ -10,6 +10,10 @@
     "web-element": "*",
     "with-nearby-modules": "*"
   },
+  "devDependencies": {
+    "identifiable": "*",
+    "make-request": "*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/erikpukinskis/web-host.git"

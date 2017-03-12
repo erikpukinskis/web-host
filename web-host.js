@@ -2,11 +2,10 @@ var library = require("module-library")(require)
 
 module.exports = library.export(
   "web-host",
-  ["web-site", "browser-bridge", "web-element"],
-  function(WebSite, BrowserBridge, element) {
+  ["web-site", "browser-bridge", "web-element", "./voxel"],
+  function(WebSite, BrowserBridge, element, Voxel) {
     
     var host = new WebSite()
-
 
     function onSite(callback) {
       var appServer = new WebSite()
@@ -15,6 +14,16 @@ module.exports = library.export(
     }
 
     var requestCallbacks = []
+
+    function onVoxel(callback) {
+      onRequest(passVoxel.bind(null, callback))
+    }
+
+    function passVoxel(callback, getBridge) {
+      var bridge = getBridge()
+      var voxel = new Voxel(bridge)
+      callback(voxel)
+    }
 
     function onRequest(callback) {
       try {
@@ -72,6 +81,7 @@ module.exports = library.export(
     return {
       onSite: onSite,
       onRequest: onRequest,
+      onVoxel: onVoxel,
     }
 
   }

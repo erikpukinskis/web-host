@@ -2,14 +2,13 @@ var library = require("module-library")(require)
 
 module.exports = library.export(
   "voxel",
-  ["web-element"],
-  function(element) {
+  ["web-element", "identifiable"],
+  function(element, identifiable) {
+
+    var voxels = {}
 
     function Voxel(bridge, base, direction) {
 
-      if (!base) {
-        defineOn(bridge)
-      }
       this.bridge = bridge
       this.base = base
       this.__isNrtvBrowserBridge = true
@@ -17,11 +16,22 @@ module.exports = library.export(
       this.neighborhood = []
       this.direction = direction
 
+      if (!voxels[bridge.id]) {
+        voxels[bridge.id] = {}
+      }
+      this.bridgeVoxels = voxels[bridge.id]
+      identifiable.assignId(this.bridgeVoxels, this)
+      this.bridgeVoxels[this.id] = true
+
+      if (!base) {
+        defineOn(bridge)
+      }
+
       passMethodsThrough(this, bridge, ["defineFunction", "defineSingleton", "remember", "see", "addToHead", "partial"])
     }
 
     Voxel.prototype.toggle = function() {
-      return bridge.remember("voxel/toggleBehind")
+      return bridge.remember("voxel/toggleBehind").withArgs(this.id)
     }
 
     Voxel.prototype.left = function(options) {
@@ -75,6 +85,8 @@ module.exports = library.export(
         el.addSelector(".voxel-"+this.direction)
       }
 
+      el.addSelector(".voxel-"+this.id)
+
       if (!this.base) {
         el = element(".channel", el)
       }
@@ -93,6 +105,7 @@ module.exports = library.export(
         this.bridge.send(content)
       } else {
         this.bridge.send(this.element(content))
+        delete voxels[this.bridge.id]
       }
     }
 
@@ -109,9 +122,25 @@ module.exports = library.export(
       bridge.addToHead(stylesheet)
 
       var toggle = bridge.defineFunction(
-        function toggle() {
+        [{}],
+        function toggleBehind(voxels, id, callback) {
           toggleClass(".voxel-left", "open")
           toggleClass(".channel", "double")
+
+          if (!voxels[id]) {
+            var voxel = {
+              id: id,
+              send: sendContentToVoxel.bind(null, id),
+            }
+            voxels[id] = voxel
+          }
+
+          function sendContentToVoxel(id, html) {
+            var node = document.querySelector(".voxel-"+id)
+            node.innerHTML = html
+          }
+
+          callback && callback(voxels[id])
 
           function toggleClass(selector, className) {
             var node = document.querySelector(selector)

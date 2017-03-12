@@ -2,19 +2,35 @@ var library = require("module-library")(require)
 
 
 library.using(
-  ["web-host", "web-element", "./voxel"],
-  function(host, element, Voxel) {
+  ["./", "web-element", "./voxel", "make-request"],
+  function(host, element, Voxel, makeRequest) {
 
-    host.onRequest(function(getBridge) {
-      var bridge = getBridge()
+    host.onSite(function(site) {
+      site.addRoute("get", "/web-host/partials/code", function(x, response) {
+        response.send("program<br>code<br>goes<br>here")
+      })
+    })
 
-      var channel = new Voxel(bridge)
+    host.onVoxel(function(channel) {
 
       var code = channel.left()
 
       code.send("program<br>code<br>goes<br>here")
 
       var buttons = channel.below()
+
+      var loadCode = bridge.defineFunction(
+        [makeRequest.defineOn(bridge)],
+        function(makeRequest, voxel) {
+          if (voxel.wasLoaded) { return }
+
+          makeRequest("/web-host/partials/code", function(html) {
+            voxel.send(html)
+          })
+
+          voxel.wasLoaded = true
+        }
+      )
 
       var showSourceButton = element(
         "button",
@@ -23,7 +39,7 @@ library.using(
           "font-size": "1em",
           "border": "0",
         }),
-        {onclick: code.toggle().evalable()},
+        {onclick: code.toggle().withArgs(loadCode).evalable()},
         "Show source"
       )
 
