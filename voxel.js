@@ -27,7 +27,7 @@ module.exports = library.export(
         defineOn(bridge)
       }
 
-      passMethodsThrough(this, bridge, ["defineFunction", "defineSingleton", "remember", "see", "addToHead", "partial"])
+      passMethodsThrough(this, bridge, ["defineFunction", "defineSingleton", "remember", "see", "addToHead", "partial", "asap"])
     }
 
     Voxel.prototype.toggle = function() {
