@@ -180,7 +180,7 @@ module.exports = library.export(
         "position": "absolute",
         "background": "#fefeff",
         "transition": "transform "+speed,
-        "max-width": "500px",
+        "max-width": "520px",
         "right": "0",
         "margin": "50px 5%",
       }),
