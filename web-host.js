@@ -21,7 +21,7 @@ module.exports = library.export(
 
     function passVoxel(callback, getBridge) {
       var bridge = getBridge()
-      var voxel = new Voxel(bridge)
+      var voxel = new Voxel(bridge, host)
       callback(voxel)
     }
 

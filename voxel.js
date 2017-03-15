@@ -2,13 +2,14 @@ var library = require("module-library")(require)
 
 module.exports = library.export(
   "voxel",
-  ["web-element", "identifiable"],
-  function(element, identifiable) {
+  ["web-element", "identifiable", "web-site"],
+  function(element, identifiable, WebSite) {
 
     var voxels = {}
 
-    function Voxel(bridge, base, direction) {
+    function Voxel(bridge, host, base, direction) {
 
+      this.host = host
       this.bridge = bridge
       this.base = base
       this.__isNrtvBrowserBridge = true
@@ -30,6 +31,20 @@ module.exports = library.export(
       passMethodsThrough(this, bridge, ["defineFunction", "defineSingleton", "remember", "see", "addToHead", "partial", "asap"])
     }
 
+    Voxel.prototype.getSite = function() {
+      if (this.site) {
+        return this.site
+      } else if (this.host) {
+        this.site = new WebSite()
+        this.host.use(this.site.app)
+        return this.site
+      } else if (this.base) {
+        return this.base.getSite()
+      } else {
+        throw new Error("no host")
+      }
+    }
+
     Voxel.prototype.toggle = function() {
       return bridge.remember("voxel/toggleBehind").withArgs(this.id)
     }
@@ -45,7 +60,7 @@ module.exports = library.export(
     }
 
     function newBaby(voxel, direction, options) {
-      var baby = new Voxel(voxel.bridge.partial(), voxel, direction)
+      var baby = new Voxel(voxel.bridge.partial(), null, voxel, direction)
 
       if (direction == "left") {
         voxel.children.push(baby)
