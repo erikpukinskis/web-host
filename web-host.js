@@ -2,8 +2,8 @@ var library = require("module-library")(require)
 
 module.exports = library.export(
   "web-host",
-  ["web-site", "browser-bridge", "web-element", "./voxel", "show-source"],
-  function(WebSite, BrowserBridge, element, Voxel, showSource) {
+  ["web-site", "browser-bridge", "web-element", "./voxel"],
+  function(WebSite, BrowserBridge, element, Voxel) {
     
     var host = new WebSite()
 
@@ -17,25 +17,6 @@ module.exports = library.export(
 
     function onVoxel(callback) {
       onRequest(passVoxel.bind(null, callback))
-    }
-
-    function hostModule(lib, moduleName, arg1, arg2) {
-
-      var args = Array.prototype.slice.call(arguments, 2)
-
-      onVoxel(function(voxel) {
-        showSource.prepareSite(voxel.getSite(), lib)
-
-        showSource.fromLibrary(
-          voxel.below(),
-          lib,
-          "build-a-house"
-        )
-
-        var singleton = lib.get(moduleName)
-
-        singleton.apply(null, [voxel].concat(args))
-      })
     }
 
     function passVoxel(callback, getBridge) {
@@ -101,7 +82,6 @@ module.exports = library.export(
       onSite: onSite,
       onRequest: onRequest,
       onVoxel: onVoxel,
-      hostModule: hostModule,
     }
 
   }
