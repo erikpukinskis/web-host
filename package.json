@@ -8,7 +8,8 @@
     "web-site": "*",
     "browser-bridge": "*",
     "web-element": "*",
-    "with-nearby-modules": "*"
+    "with-nearby-modules": "*",
+    "identifiable": "*"
   },
   "devDependencies": {
     "identifiable": "*",
