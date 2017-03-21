@@ -16,6 +16,7 @@ module.exports = library.export(
       this.children = []
       this.neighborhood = []
       this.direction = direction
+      this.selectors = []
 
       if (!voxels[bridge.id]) {
         voxels[bridge.id] = {}
@@ -45,6 +46,18 @@ module.exports = library.export(
       }
     }
 
+    Voxel.prototype.selector = function() {
+      if (this.elementId) {
+        // already assigned an id
+      } else if (this.el) {
+        this.elementId = this.el.assignId()
+      } else {
+        this.elementId = element().assignId()
+      }
+
+      return "#"+this.elementId
+    }
+
     Voxel.prototype.toggle = function() {
       return bridge.remember("voxel/toggleBehind").withArgs(this.id)
     }
@@ -61,6 +74,10 @@ module.exports = library.export(
 
     function newBaby(voxel, direction, options) {
       var baby = new Voxel(voxel.bridge.partial(), null, voxel, direction)
+
+      if (options && options.open) {
+        baby.selectors.push(".open")
+      }
 
       if (direction == "left") {
         voxel.children.push(baby)
@@ -92,15 +109,16 @@ module.exports = library.export(
       }
 
       var el = element(".voxel", content)
-      if (this.selector) {
-        el.addSelector(this.selector)
-      }
+      el.id = this.elementId
 
       if (this.direction) {
         el.addSelector(".voxel-"+this.direction)
       }
 
       el.addSelector(".voxel-"+this.id)
+      this.selectors.forEach(function(selector) {
+        el.addSelector(selector)
+      })
 
       if (!this.base) {
         el = element(".channel", el)
@@ -180,7 +198,7 @@ module.exports = library.export(
         "position": "absolute",
         "background": "#fefeff",
         "transition": "transform "+speed,
-        "max-width": "520px",
+        "max-width": "50%",
         "right": "0",
         "margin": "50px 5%",
       }),
