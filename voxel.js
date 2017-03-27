@@ -76,6 +76,7 @@ module.exports = library.export(
       var baby = new Voxel(voxel.bridge.partial(), null, voxel, direction)
 
       if (options && options.open) {
+        voxel.selectors.push(".double")
         baby.selectors.push(".open")
       }
 
@@ -198,12 +199,11 @@ module.exports = library.export(
         "position": "absolute",
         "background": "#fefeff",
         "transition": "transform "+speed,
-        "max-width": "50%",
         "right": "0",
         "margin": "50px 5%",
       }),
 
-      element.style(".channel.double", {
+      element.style(".voxel.double", {
         "@media (min-width: 500px)": {
           "max-width": "50%",
         }

@@ -39,6 +39,12 @@ module.exports = library.export(
 
         bridge = new BrowserBridge()
 
+        bridge.getSite = function() {
+          var appServer = new WebSite()
+          host.use(appServer.app)
+          return appServer
+        }
+
         var voxels = []
 
         function getPartial() {
