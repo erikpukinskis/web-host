@@ -25,6 +25,12 @@ module.exports = library.export(
       callback(voxel)
     }
 
+    function onBridge(callback) {
+      onRequest(callIt.bind(null, callback))
+    }
+
+    function callIt(callback) { return callback() }
+
     function onRequest(callback) {
       try {
         throw new Error("You called web-host.onRequest here:")
@@ -87,6 +93,7 @@ module.exports = library.export(
     return {
       onSite: onSite,
       onRequest: onRequest,
+      onBridge: onBridge,
       onVoxel: onVoxel,
     }
 
