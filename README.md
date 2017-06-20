@@ -1,3 +1,8 @@
+If you want to define a web site that can run alongside other web sites, **web-host** can help you do that.
+
+## Demo
+
+```javascript
 var library = require("module-library")(require)
 
 library.using(
@@ -24,4 +29,4 @@ library.using(
 
   }
 )
-
+```
