@@ -9,10 +9,10 @@
     "browser-bridge": "*",
     "web-element": "*",
     "with-nearby-modules": "*",
-    "identifiable": "*"
-  },
-  "devDependencies": {
     "identifiable": "*",
+    "puppeteer": "*",
+    "get-socket": "*",
+    "nrtv-single-use-socket": "*",
     "make-request": "*"
   },
   "repository": {
