@@ -13,7 +13,8 @@
     "puppeteer": "*",
     "get-socket": "*",
     "nrtv-single-use-socket": "*",
-    "make-request": "*"
+    "make-request": "*",
+    "bridge-module": "*"
   },
   "repository": {
     "type": "git",
