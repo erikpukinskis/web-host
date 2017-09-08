@@ -1,27 +1,48 @@
 var library = require("module-library")(require)
 
+// createBrowserContext for security: 
+//  https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createBrowserContext
+// https://github.com/cyrus-and/chrome-remote-interface/issues/118
+
+// Streaming HTTP server interfaces:
+// http://www.apachetutor.org/dev/brigades
+// https://hexdocs.pm/raxx/Raxx.html
+
+
 library.using(
-  ["./", "web-element"],
-  function(host, element) {
+  ["puppeteer", "web-site", "fs", "./site-server"],
+  function(puppeteer, WebSite, fs, SiteServer) {
 
-    host.onRequest(function(getBridge) {
-      var bridge = getBridge()
-      bridge.send("Hello, world")
+    var baseSite = new WebSite()
+
+    baseSite.addRoute("get", "/kill", function(request, response) {
+      response.send("dying...")
+      setTimeout(function() {
+        launchedBrowser && launchedBrowser.close()
+        baseSite.stop()
+      })
     })
 
-    host.onSite(function(site) {
+    var sites = new SiteServer(baseSite)
+    
+    sites.host("hello-world", fs.readFileSync("hello-world.js"))
 
-      site.addRoute(
-        "get",
-        "/bye",
-        function(request, response) {
-          response.send("Y'all have a nice day now")
-        }
-      )
+    baseSite.start(3002)
+
+    puppeteer.launch().then(function(browser) {
+      launchedBrowser = browser
+
+      browser.newPage().then(loadServerOne)
+
+      function loadServerOne(page) {
+        page.goto("http://localhost:3002/servers/hello-world").then(done)
+      }
+
+      function done() {
+        console.log("browser launched. Visit http://localhost:3002/sites/hello-world/")
+        console.log("\nhttp://localhost:3002/kill to kill")
+      }
     })
-
-    // site should be started now. check your terminal for the address
 
   }
 )
-
