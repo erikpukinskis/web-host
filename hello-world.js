@@ -1,5 +1,5 @@
 library.using(
-  ["site-host"],
+  ["host-from-browser"],
   function(host) {
     host.onSite(function(site) {
       site.addRoute("get", "/", hello)
