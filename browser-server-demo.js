@@ -1,17 +1,13 @@
 var library = require("module-library")(require)
 
-// createBrowserContext for security: 
-//  https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createBrowserContext
-// https://github.com/cyrus-and/chrome-remote-interface/issues/118
-
-// Streaming HTTP server interfaces:
-// http://www.apachetutor.org/dev/brigades
-// https://hexdocs.pm/raxx/Raxx.html
-
 
 library.using(
-  ["puppeteer", "web-site", "fs", "./site-server"],
-  function(puppeteer, WebSite, fs, SiteServer) {
+  ["puppeteer", "web-site", "fs", "./site-server", "tell-the-universe", "javascript-to-ezjs", "show-source", "an-expression"],
+  function(puppeteer, WebSite, fs, SiteServer, aWildUniverseAppeared, javascriptToEzjs, showSource, anExpression) {
+
+
+
+    // Settin up infra:
 
     var baseSite = new WebSite()
 
@@ -24,10 +20,47 @@ library.using(
     })
 
     var sites = new SiteServer(baseSite)
-    
-    sites.host("hello-world", fs.readFileSync("hello-world.js"))
 
     baseSite.start(3002)
+
+
+
+
+    
+    // Hello, world!
+
+    var source = fs.readFileSync("./a-panel-bond.js").toString()
+
+    sites.host("a-panel-bond", source)
+
+    var universe = aWildUniverseAppeared("a-panel-bond-codes", {anExpression: "an-expression"})
+    
+    var tree = anExpression.tree()
+    universe.do("anExpression.tree", tree.id)
+    tree.logTo(universe)
+    javascriptToEzjs(source, tree)
+
+    baseSite.addRoute("get", "/edit/:siteId", function(request, response) {
+      var bridge = new BrowserBridge()
+
+      var partial = bridge.partial()
+
+      showSource.prepareBridge(partial)
+      
+      showSource(partial, "./a-panel-bond", lib)
+
+      // renderExpression(partial, tree.rootId(), tree)
+
+      var iframe = element("iframe", {src: "/sites/"+siteId})
+      bridge.forResponse(response).send([
+        iframe,
+        partial
+      ])
+
+    })
+
+
+    // Get a server server:
 
     puppeteer.launch().then(function(browser) {
       launchedBrowser = browser
@@ -46,3 +79,16 @@ library.using(
 
   }
 )
+
+
+
+
+// createBrowserContext for security: 
+//  https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createBrowserContext
+// https://github.com/cyrus-and/chrome-remote-interface/issues/118
+
+// Streaming HTTP server interfaces:
+// http://www.apachetutor.org/dev/brigades
+// https://hexdocs.pm/raxx/Raxx.html
+
+
