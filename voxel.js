@@ -1,5 +1,19 @@
 var library = require("module-library")(require)
 
+
+
+// programs fit in an 8x8 block
+
+// there's a row above the program
+
+// (ezjs logo fits along the edge of the 8x8
+
+// when I'm working on a program, my avatar is there next to it
+
+// while a program is in pre-production ezjs.co is basically just my workspace
+
+
+
 module.exports = library.export(
   "voxel",
   ["web-element", "identifiable", "web-site"],
