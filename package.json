@@ -1,6 +1,6 @@
 {
   "name": "web-host",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "A home page for hosting multiple apps on one server",
   "main": "web-host.js",
   "dependencies": {
@@ -14,7 +14,14 @@
     "get-socket": "*",
     "nrtv-single-use-socket": "*",
     "make-request": "*",
-    "bridge-module": "*"
+    "bridge-module": "*",
+    "issue-bond": "*",
+    "inches": "*",
+    "sell-bond": "*",
+    "an-expression": "*",
+    "show-source": "*",
+    "javascript-to-ezjs": "*",
+    "tell-the-universe": "*"
   },
   "repository": {
     "type": "git",
