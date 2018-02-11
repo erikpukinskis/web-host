@@ -9,14 +9,16 @@ module.exports = library.export(
       this.sockets = {}
       this.sources = {}
 
-      defineOn(baseServer, this)
+      this.prepareSite(baseServer)
     }
 
     SiteServer.prototype.host = function(siteId, source) {
       this.sources[siteId] = source
     }
 
-    function defineOn(baseServer, sites) {
+    SiteServer.prototype.prepareSite = function(baseServer) {
+
+      var sites = this
 
       getSocket.handleConnections(
         baseServer,
@@ -80,6 +82,9 @@ module.exports = library.export(
 
         var path = request.path
         var parts = request.path.match(/^\/sites\/([0-9a-zA-Z-]+)(\/.*)$/)
+        if (!parts) {
+          return next()
+        }
         var siteId = parts[1]
         var path = parts[2]
 

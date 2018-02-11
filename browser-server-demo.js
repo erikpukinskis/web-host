@@ -2,8 +2,8 @@ var library = require("module-library")(require)
 
 
 library.using(
-  ["puppeteer", "web-site", "fs", "./site-server", "tell-the-universe", "javascript-to-ezjs", "show-source", "an-expression"],
-  function(puppeteer, WebSite, fs, SiteServer, aWildUniverseAppeared, javascriptToEzjs, showSource, anExpression) {
+  ["puppeteer", "web-site", "fs", "./site-server", "tell-the-universe", "an-expression", "write-code", "browser-bridge", "web-element"],
+  function(puppeteer, WebSite, fs, SiteServer, aWildUniverseAppeared, anExpression, writeCode, BrowserBridge, element) {
 
 
 
@@ -29,29 +29,32 @@ library.using(
     
     // Hello, world!
 
-    var source = fs.readFileSync("./a-panel-bond.js").toString()
+    // var source = fs.readFileSync("./hello-world.js").toString()
 
-    sites.host("a-panel-bond", source)
+    // sites.host("hello-world", source)
 
-    var universe = aWildUniverseAppeared("a-panel-bond-codes", {anExpression: "an-expression"})
+    var universe = aWildUniverseAppeared("an-expression/hello-world", {anExpression: "an-expression"})
     
     var tree = anExpression.tree()
     universe.do("anExpression.tree", tree.id)
     tree.logTo(universe)
-    javascriptToEzjs(source, tree)
+
+    writeCode.prepareSite(baseSite)
 
     baseSite.addRoute("get", "/edit/:siteId", function(request, response) {
-      var bridge = new BrowserBridge()
 
+      var siteId = request.params.siteId
+      var bridge = new BrowserBridge()
+      
       var partial = bridge.partial()
 
-      showSource.prepareBridge(partial)
-      
-      showSource(partial, "./a-panel-bond", lib)
+      writeCode.prepareBridge(bridge)
+      writeCode(partial)
 
       // renderExpression(partial, tree.rootId(), tree)
 
       var iframe = element("iframe", {src: "/sites/"+siteId})
+
       bridge.forResponse(response).send([
         iframe,
         partial
@@ -62,20 +65,20 @@ library.using(
 
     // Get a server server:
 
-    puppeteer.launch().then(function(browser) {
-      launchedBrowser = browser
+    // puppeteer.launch().then(function(browser) {
+    //   launchedBrowser = browser
 
-      browser.newPage().then(loadServerOne)
+    //   browser.newPage().then(loadServerOne)
 
-      function loadServerOne(page) {
-        page.goto("http://localhost:3002/servers/hello-world").then(done)
-      }
+    //   function loadServerOne(page) {
+    //     page.goto("http://localhost:3002/servers/write-code").then(done)
+    //   }
 
-      function done() {
-        console.log("browser launched. Visit http://localhost:3002/sites/hello-world/")
-        console.log("\nhttp://localhost:3002/kill to kill")
-      }
-    })
+    //   function done() {
+    //     console.log("browser launched. Visit http://localhost:3002/sites/write-code/")
+    //     console.log("\nhttp://localhost:3002/kill to kill")
+    //   }
+    // })
 
   }
 )

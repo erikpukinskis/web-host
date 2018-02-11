@@ -1,12 +1,13 @@
-library.using(
-  ["host-from-browser"],
-  function(host) {
-    host.onSite(function(site) {
-      site.addRoute("get", "/", hello)
-    })
+// hello-world.js, appeared-a-wild remix
 
-    function hello(request, response) {
-      response.send("HELLO WORLD")
-    }
-  }
-)
+appearedAWild(
+  "web-site",
+  function(site) {
+    site.addRoute(
+      "get",
+      "/")})
+
+appearedAWild(
+  "browser-bridge",
+  function(bridge) {
+    bridge.send("HELLO WORLD")})
