@@ -22,7 +22,8 @@
     "web-site": "*",
     "with-nearby-modules": "*",
     "write-code": "^0.7.0",
-    "appeared-a-wild": "*"
+    "appeared-a-wild": "*",
+    "a-wild-universe-appeared": "*"
   },
   "repository": {
     "type": "git",

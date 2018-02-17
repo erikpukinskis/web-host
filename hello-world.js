@@ -4,14 +4,15 @@ appearedAWild(
   "browser-bridge",
   function(bridge) {
     var form = webElement(
-    bridge.send("HELLO WORLD")})}
+    bridge.send("hello, world")})}
+
 
 
 // basic-site.js
 
-function helloWorld(appearedAWild, functionCallLog, webElement, askFor) {
+function postHello(appearedAWild, functionCallLog, webElement, askForPlaintext) {
 
-  // Basic persistence:
+  // PERSISTENCE
 
   var messages = []
 
@@ -32,16 +33,17 @@ function helloWorld(appearedAWild, functionCallLog, webElement, askFor) {
         log.request())
 
 
-  // Load from cloud:
+  // LOAD FROM CLOUD
 
   log.persistToS3(
-    askForInfo(
+    askForPlaintext(
+      "10jcsw58plnbyr3wdvjii7863wsxvh",
       "Enter the s3 credentials for the hello store"))
 
   log.replayRemote()
 
 
-  // Form:
+  // WEB FORM
 
   var input = webElement(
     "input",{
@@ -60,10 +62,10 @@ function helloWorld(appearedAWild, functionCallLog, webElement, askFor) {
 
   var title = webElement(
     "h1",
-    "HELLO WORLD!")
+    "HELLO POST")
 
 
-  // Handling requests:
+  // HANDLE REQUESTS
 
   appearedAWild(
     "browser-bridge",
@@ -76,5 +78,4 @@ function helloWorld(appearedAWild, functionCallLog, webElement, askFor) {
         title,
         list,
         form])})
-
 }
