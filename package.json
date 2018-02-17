@@ -4,7 +4,9 @@
   "description": "A home page for hosting multiple apps on one server",
   "main": "browser-server-demo.js",
   "dependencies": {
+    "a-wild-universe-appeared": "^0.33.0",
     "an-expression": "*",
+    "appeared-a-wild": "*",
     "bridge-module": "*",
     "browser-bridge": "*",
     "get-socket": "*",
@@ -13,17 +15,14 @@
     "issue-bond": "*",
     "javascript-to-ezjs": "*",
     "make-request": "*",
-    "module-library": "*",
+    "module-library": "^0.80.0",
     "nrtv-single-use-socket": "*",
     "puppeteer": "*",
     "sell-bond": "*",
-    "tell-the-universe": "*",
     "web-element": "*",
     "web-site": "*",
     "with-nearby-modules": "*",
-    "write-code": "^0.7.0",
-    "appeared-a-wild": "*",
-    "a-wild-universe-appeared": "*"
+    "write-code": "^0.10.0"
   },
   "repository": {
     "type": "git",

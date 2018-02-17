@@ -1,9 +1,51 @@
 var library = require("module-library")(require)
 
+library.define(
+  "boot-tree",[
+  "a-wild-universe-appeared",
+  "an-expression",
+  "make-request"],
+  function(aWildUniverseAppeared, anExpression, makeRequest) {
+
+    function bootTree(programName) {
+      var tree = this.tree = anExpression.tree()
+      var universe = aWildUniverseAppeared(
+        "expression-tree", {
+        anExpression: "an-expression"})
+
+      universe.mute()
+      tree.logTo(universe)
+
+      tree.addExpressionAt(
+        tree.reservePosition(),
+        anExpression.functionLiteral())
+
+      universe.onStatement(save)
+
+      return tree
+    }
+
+    function save(functionName, args) {
+
+      var data = {
+        functionName: functionName,
+        args: args,
+      }
+
+      makeRequest({
+        method: "post",
+        path: "/universes/expression-trees",
+        data: data })
+    }
+
+    return bootTree
+  }
+)
+
 
 library.using(
-  ["puppeteer", "web-site", "fs", "./site-server", "tell-the-universe", "an-expression", "write-code", "browser-bridge", "web-element"],
-  function(puppeteer, WebSite, fs, SiteServer, aWildUniverseAppeared, anExpression, writeCode, BrowserBridge, element) {
+  [library.ref(), "puppeteer", "web-site", "fs", "./site-server", "a-wild-universe-appeared", "an-expression", "write-code", "browser-bridge", "web-element", "boot-tree", "bridge-module"],
+  function(lib, puppeteer, WebSite, fs, SiteServer, aWildUniverseAppeared, anExpression, writeCode, BrowserBridge, element, bootTree, bridgeModule) {
 
 
 
@@ -21,41 +63,59 @@ library.using(
 
     var sites = new SiteServer(baseSite)
 
+    console.log("Starting")
     baseSite.start(3002)
 
+    var programs = aWildUniverseAppeared(
+      "programs", {
+      anExpression: "an-expression"})
 
+    programs.mirrorTo({
+      "an-expression": anExpression })
 
+    baseSite.addRoute(
+      "post",
+      "/universes/expression-trees",
+      function(request, response) {
+        var statement = request.body
 
-    
-    // Hello, world!
+        var doArgs = [statement.functionName].concat(statement.args)
 
-    // var source = fs.readFileSync("./hello-world.js").toString()
+        programs.do.apply(programs, doArgs)
 
-    // sites.host("hello-world", source)
-
-    var universe = aWildUniverseAppeared("an-expression/hello-world", {anExpression: "an-expression"})
-    
-    var tree = anExpression.tree()
-    universe.do("anExpression.tree", tree.id)
-    tree.logTo(universe)
+        response.send({ok: true})
+      }
+    )
 
     writeCode.prepareSite(baseSite)
 
-    baseSite.addRoute("get", "/edit/:siteId", function(request, response) {
+    baseSite.addRoute(
+      "get",
+      "/edit/:name",
+      function(request, response) {
 
-      var siteId = request.params.siteId
-      var bridge = new BrowserBridge()
-      
+      var routeParam = request.params.name
+
+      var bridge = new BrowserBridge().forResponse(response)
+
       var partial = bridge.partial()
 
-      writeCode.prepareBridge(bridge)
-      writeCode(partial)
+      var tree = bridge.defineSingleton(
+        "treeSingleton",[
+        bridgeModule(lib, "boot-tree", bridge),
+        routeParam],
+        function(bootTree, name) {
+          return bootTree(name)
+        }
+      )
 
-      // renderExpression(partial, tree.rootId(), tree)
+      
 
-      var iframe = element("iframe", {src: "/sites/"+siteId})
+      writeCode(partial, tree)
 
-      bridge.forResponse(response).send([
+      var iframe = element("iframe", {src: "/sites/"+name})
+
+      bridge.send([
         iframe,
         partial
       ])
