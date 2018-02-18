@@ -8,7 +8,9 @@ library.define(
   function(aWildUniverseAppeared, anExpression, makeRequest) {
 
     function bootTree(programName) {
+
       var tree = this.tree = anExpression.tree()
+
       var universe = aWildUniverseAppeared(
         "expression-tree", {
         anExpression: "an-expression"})
@@ -16,28 +18,75 @@ library.define(
       universe.mute()
       tree.logTo(universe)
 
+      universe.do("anExpression.tree", tree.id)
+
       tree.addExpressionAt(
         tree.reservePosition(),
         anExpression.functionLiteral())
 
-      universe.onStatement(save)
+      var save = saveUniverse.bind(null, universe)
+
+      tree.save = rewriteIds.bind(null, tree, universe, save)
 
       return tree
     }
 
-    function save(functionName, args) {
+    function saveUniverse(universe) {
+      var statements = []
 
-      var data = {
-        functionName: functionName,
-        args: args,
-      }
+      var fromMark = universe.getLastSyncMark()
+      var toMark = universe.mark()
+      var statements = universe.getStatements(fromMark, toMark)
 
       makeRequest({
         method: "post",
         path: "/universes/expression-trees",
-        data: data })
+        data: {
+          mark: fromMark,
+          statements: statements}},
+        function(response) {
+          if (response && response.status == 200) {
+            universe.markSynced(toMark, response.mark)
+          }
+        }
+      )
     }
 
+    function rewriteIds(tree, universe, callback) {
+
+      var forkIds = tree.getLocalTreeIds()
+      var path = "/an-expression/reserve-tree-ids/"+forkIds.length+"?not="+forkIds.join(",")
+
+      if (forkIds.length == 0) {
+        return callback()
+      }
+
+      makeRequest({
+        method: "post",
+        path: path},
+        function(ids) {
+          var globalIds = keysWithValues(forkIds, ids)
+
+          tree.swapInGlobalTreeIds(globalIds)
+
+          universe.rewriteArguments(
+            "anExpression.*",
+            0,
+            globalIds
+          )
+
+          callback()
+        }
+      )
+    }
+
+    function keysWithValues(keys, values) {
+      var object = {}
+      keys.forEach(function(key, i) {
+        object[key] = values[i]
+      })
+      return object
+    }
     return bootTree
   }
 )
@@ -77,15 +126,62 @@ library.using(
       "post",
       "/universes/expression-trees",
       function(request, response) {
-        var statement = request.body
+        request.body.statements.forEach(function(statement) {
+          var doArgs = [statement.functionName].concat(statement.args)
 
-        var doArgs = [statement.functionName].concat(statement.args)
-
-        programs.do.apply(programs, doArgs)
+          programs.do.apply(programs, doArgs)
+        })
 
         response.send({ok: true})
       }
     )
+
+    baseSite.addRoute(
+      "post",
+      "/an-expression/reserve-tree-ids/:count",
+      function(request, response) {
+
+        if (request.query.not) {
+          var taken = request.query.not.split(",")
+        }
+
+        var count = request.params.count
+
+        if (!Number.isInteger(count)) {
+          count = 1
+        }
+
+        if (count > 100) {
+          return response.json({error: "You can only reserve 100 statement tree ids at a time"})
+        }
+
+        var ids = []
+
+        while(ids.length < count) {
+          var id = anExpression.treeId()
+          if (!taken || !contains(taken, id)) {
+            ids.push(id)
+          }
+        }
+
+        response.send(ids)
+      }
+    )
+
+    function contains(array, value) {
+      if (!Array.isArray(array)) {
+        throw new Error("looking for "+JSON.stringify(value)+" in "+JSON.stringify(array)+", which is supposed to be an array. But it's not.")
+      }
+      var index = -1;
+      var length = array.length;
+      while (++index < length) {
+        if (array[index] == value) {
+          return true;
+        }
+      }
+      return false;
+    }
+
 
     writeCode.prepareSite(baseSite)
 
@@ -109,7 +205,10 @@ library.using(
         }
       )
 
-      
+      var saveButton = element(
+        "button", {
+        onclick: tree.methodCall("save").evalable() },
+        "Save")
 
       writeCode(partial, tree)
 
@@ -117,11 +216,11 @@ library.using(
 
       bridge.send([
         iframe,
+        saveButton,
         partial
       ])
 
     })
-
 
     // Get a server server:
 
