@@ -4,8 +4,8 @@
   "description": "A home page for hosting multiple apps on one server",
   "main": "browser-server-demo.js",
   "dependencies": {
-    "a-wild-universe-appeared": "^0.33.0",
-    "an-expression": "*",
+    "a-wild-universe-appeared": "^0.34.0",
+    "an-expression": "^0.50.0",
     "appeared-a-wild": "*",
     "bridge-module": "*",
     "browser-bridge": "*",

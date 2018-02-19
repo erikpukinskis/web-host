@@ -126,6 +126,9 @@ library.using(
       "post",
       "/universes/expression-trees",
       function(request, response) {
+
+        // We also have response.body.mark... What would we do with it? I guess just flag that mark as "written-from" so we can error if we try to mark from there again? Then we can do retries and not have to worry about doing a double write
+
         request.body.statements.forEach(function(statement) {
           var doArgs = [statement.functionName].concat(statement.args)
 
@@ -205,8 +208,41 @@ library.using(
         }
       )
 
+      var music = element.template(
+        "iframe.soundtrack",
+        element.style({
+          "position": "absolute",
+          "bottom": "50px",
+          "width": "150px",
+          "height": "100px",
+          "opacity": "0.1",
+          "border": "0"}),
+        function(youTubeId, start, finish) {
+          var url = "http://www.infinitelooper.com/?v="+youTubeId+"&p=n#/"
+          if (start && finish) {
+            url += start+";"+finish
+          }
+          this.addAttribute("src", url)
+        })
+
+
+      var sound = element.template(
+        "iframe.sound",{
+        src: "https://www.youtube.com//embed/miZHa7ZC6Z0?autoplay=1"},
+        element.style({
+          "position": "absolute",
+          "bottom": "50px",
+          "width": "150px",
+          "height": "100px",
+          "opacity": "0.1",
+          "border": "0"}))
+
+      var startupSound = sound("miZHa7ZC6Z0")
+
       var saveButton = element(
-        "button", {
+        "button",
+        element.style({
+          }),{
         onclick: tree.methodCall("save").evalable() },
         "Save")
 
@@ -217,7 +253,9 @@ library.using(
       bridge.send([
         iframe,
         saveButton,
-        partial
+        partial,
+        startupSound,
+        element.stylesheet(sound)
       ])
 
     })
