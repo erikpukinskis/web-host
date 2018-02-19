@@ -7,13 +7,13 @@ module.exports = library.export(
 
     function SiteServer(baseServer) {
       this.sockets = {}
-      this.sources = {}
+      this.getSource = null
 
       this.prepareSite(baseServer)
     }
 
-    SiteServer.prototype.host = function(siteId, source) {
-      this.sources[siteId] = source
+    SiteServer.prototype.host = function(getSource) {
+      this.getSource = getSource
     }
 
     SiteServer.prototype.prepareSite = function(baseServer) {
@@ -32,7 +32,7 @@ module.exports = library.export(
       baseServer.addRoute("get", "/sites/:siteId.js", function(request, response) {
         var siteId = request.params.siteId
         ensureValidSite(siteId)
-        response.send(sites.sources[siteId])
+        response.send(sites.getSource(siteId))
       })
 
       function ensureValidSite(siteId) {
@@ -40,7 +40,7 @@ module.exports = library.export(
           throw new Error("site id "+siteId+" is not a string")
         } else if (siteId.match(/[^0-9a-zA-Z-]/)) {
           throw new Error("site id "+siteId+" has stuff other than letters, numbers, and dashes")
-        } else if (!sites.sources[siteId]) {
+        } else if (!sites.getSource(siteId)) {
           throw new Error("No source for site "+siteId)
         }
       }

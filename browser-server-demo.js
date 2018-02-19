@@ -7,7 +7,7 @@ library.define(
   "make-request"],
   function(aWildUniverseAppeared, anExpression, makeRequest) {
 
-    function bootTree(programName) {
+    function bootTree(programName, previewId) {
 
       var tree = this.tree = anExpression.tree()
 
@@ -24,14 +24,27 @@ library.define(
         tree.reservePosition(),
         anExpression.functionLiteral())
 
-      var save = saveUniverse.bind(null, universe)
+      var rewrite = rewriteIds.bind(null, tree, universe)
 
-      tree.save = rewriteIds.bind(null, tree, universe, save)
+      var save = saveUniverse.bind(null, universe, programName)
+
+      var reload = reloadPreview.bind(null, previewId)
+
+      tree.save = sequence.bind(
+        null,[
+        rewrite,
+        save,
+        reload])
 
       return tree
     }
 
-    function saveUniverse(universe) {
+    function reloadPreview(previewId, callback) {
+      document.getElementById(previewId).contentWindow.location.reload()
+      callback()
+    }
+
+    function saveUniverse(universe, name, callback) {
       var statements = []
 
       var fromMark = universe.getLastSyncMark()
@@ -40,14 +53,16 @@ library.define(
 
       makeRequest({
         method: "post",
-        path: "/universes/expression-trees",
+        path: "/universes/expression-trees/"+name,
         data: {
           mark: fromMark,
           statements: statements}},
         function(response) {
-          if (response && response.status == 200) {
+          var success = response && response.status == 200
+          if (success) {
             universe.markSynced(toMark, response.mark)
           }
+          callback(success)
         }
       )
     }
@@ -87,6 +102,18 @@ library.define(
       })
       return object
     }
+
+    function sequence(callbacks, completed) {
+      if (!completed) {
+        completed = 0
+      }
+      var next = sequence.bind(null, callbacks, completed+1)
+      if (!callbacks[completed]) {
+        return
+      }
+      callbacks[completed].call(null, next)
+    }
+
     return bootTree
   }
 )
@@ -119,17 +146,32 @@ library.using(
       "programs", {
       anExpression: "an-expression"})
 
+    var treeIdsByName = {}
+
+    sites.host(function getSource(name) {
+      var tree = anExpression.getTree(treeIdsByName[name])
+      return tree.toJavaScript()
+    })
+
     programs.mirrorTo({
       "an-expression": anExpression })
 
     baseSite.addRoute(
       "post",
-      "/universes/expression-trees",
+      "/universes/expression-trees/:name",
       function(request, response) {
 
         // We also have response.body.mark... What would we do with it? I guess just flag that mark as "written-from" so we can error if we try to mark from there again? Then we can do retries and not have to worry about doing a double write
 
+        var name = request.params.name
+
         request.body.statements.forEach(function(statement) {
+
+          if (statement.functionName == "anExpression.tree") {
+            treeId = statement.args[0]
+            treeIdsByName[name] = treeId
+          }
+
           var doArgs = [statement.functionName].concat(statement.args)
 
           programs.do.apply(programs, doArgs)
@@ -199,15 +241,6 @@ library.using(
 
       var partial = bridge.partial()
 
-      var tree = bridge.defineSingleton(
-        "treeSingleton",[
-        bridgeModule(lib, "boot-tree", bridge),
-        routeParam],
-        function(bootTree, name) {
-          return bootTree(name)
-        }
-      )
-
       var music = element.template(
         "iframe.soundtrack",
         element.style({
@@ -239,22 +272,41 @@ library.using(
 
       var startupSound = sound("miZHa7ZC6Z0")
 
+      var iframe = element("iframe", {src: "/sites/"+name})
+
+      var previewId = iframe.assignId()
+
+      var tree = bridge.defineSingleton(
+        "treeSingleton",[
+        bridgeModule(lib, "boot-tree", bridge),
+        routeParam,
+        previewId],
+        function(bootTree, name, previewId) {
+          return bootTree(name, previewId)
+        }
+      )
+
       var saveButton = element(
         "button",
+        "Save",
         element.style({
-          }),{
-        onclick: tree.methodCall("save").evalable() },
-        "Save")
+          "background": "#ff4879",
+          "color": "#e8edff",
+          "padding": "10px 20px",
+          "border": "none",
+          "font-size": "1em",
+          "display": "block",
+          "margin": "1em 0",
+          "cursor": "pointer"}),{
+        onclick: tree.methodCall("save").evalable()})
 
       writeCode(partial, tree)
-
-      var iframe = element("iframe", {src: "/sites/"+name})
 
       bridge.send([
         iframe,
         saveButton,
         partial,
-        startupSound,
+        // startupSound,
         element.stylesheet(sound)
       ])
 
