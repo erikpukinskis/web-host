@@ -1,50 +1,4 @@
-
-appearedAWild(
-  "browser-bridge",
-  function(bridge) {
-    bridge.send("hello, world")})
-
-
-appearedAWild([
-  "browser-bridge"],
-  function(bridge) {
-    bridge.send("hello, world")})
-
-
-defineFunction(
-  "hello-world",
-  ["one:browser-bridge"],
-  function(bridge) {
-    bridge.send(
-      "hello, world!")})
-
-nameFunction(
-  ..
-
-nameSomething(
-  "hello-world",
-  ["one:browser-bridge"],
-  function(bridge) {
-    bridge.send(
-      "hello, world!")})
-
-nameFunction.andRun(
-  "hello-world",
-  ["one:browser-bridge"],
-  function(bridge) {
-    bridge.send(
-      "hello, world!")})
-
-defineModule(
-  "hello-world",
-  ["one:browser-bridge"],
-  function(bridge) {
-    bridge.send(
-      "hello, world!")})
-
-
-library.define(
-  "hello-world",
+library.using(
   ["appeared-a-wild", "web-element"],
   function(appearedAWild, webElement) {
     appearedAWild(
@@ -56,66 +10,25 @@ library.define(
 
 
 library.using(
-  ["#browser-bridge"],
-  function(bridge) {
-    bridge.send("hello, world")})
+  ["issueBond", "accountability"],
+  function(issueBond, accountability) {
+    issueBond.lineItem (
+      "workshop" ,
+      "jan-7-2108@bobby" ,
+      "build roof, 6 hours" ,
+      6 * 1500 )
+    accountability()})
 
-
-library.using(
-  ["a browser-bridge"],
-  function(bridge) {
-    bridge.send("hello, world")})
-
-
-nameFunction(
-  "hello-world",[
-  "appeared-a-wild",
-  "web-element"],
-  function (whenItAppears, webElement){
-    var heading = webElement(
-      "h1",
-      "hello, world!")
-    whenItAppears([
-      "browser-bridge"],
-      function(bridge){
-        bridge.send(heading)})
-
-
-function helloWorld(whenItAppears, webElement){
-  var heading = webElement(
-    "h1",
-    "hello, world!")
-  whenItAppears([
-    "browser-bridge"],
-    function(bridge){
-      bridge.send(heading)})
-
-
-
-
-
-
-/////////////////////////////////////
 
 library.define(
-  "hello-world",[
-  "appeared-a-wild",
-  "web-element"],
-  function (appearedAWild, webElement){
-    var heading = webElement(
-      "h1",
-      "hello, world!")
-    appearedAWild([
-      "browser-bridge"],
-      function (bridge){
-        bridge.send(heading)})
-
-/////////////////////////////////////
-
-
-
-
-
-
-
-
+  "a-panel-bond",
+  ["issue-bond", "inches", "sell-bond"],
+  function(issueBond, inches, sellBond) {
+    issueBond("a-panel", "Wall panel A", "Erik Pukinskis")
+    var wallHeight = 88
+    issueBond.tasks("a-panel", [
+      "reserve a truck",
+      "buy materials",
+      "cut 4 steel studs to "+inches(
+        wallHeight)])
+    sellBond("a-panel")})
