@@ -1,81 +1,121 @@
-// hello-world.js
 
 appearedAWild(
   "browser-bridge",
   function(bridge) {
-    var form = webElement(
-    bridge.send("hello, world")})}
+    bridge.send("hello, world")})
 
 
-
-// basic-site.js
-
-function postHello(appearedAWild, functionCallLog, webElement, askForPlaintext) {
-
-  // PERSISTENCE
-
-  var messages = []
-
-  function hello(message) {
-    messages.push(message)
-  }
-
-  var log = functionCallLog({
-    hello: hello
-  })
-
-  appearedAWild(
-    "web-site",
-    function(site) {
-      site.addRoute(
-        "post",
-        "/hellos",
-        log.request())
+appearedAWild([
+  "browser-bridge"],
+  function(bridge) {
+    bridge.send("hello, world")})
 
 
-  // LOAD FROM CLOUD
+defineFunction(
+  "hello-world",
+  ["one:browser-bridge"],
+  function(bridge) {
+    bridge.send(
+      "hello, world!")})
 
-  log.persistToS3(
-    askForPlaintext(
-      "10jcsw58plnbyr3wdvjii7863wsxvh",
-      "Enter the s3 credentials for the hello store"))
+nameFunction(
+  ..
 
-  log.replayRemote()
+nameSomething(
+  "hello-world",
+  ["one:browser-bridge"],
+  function(bridge) {
+    bridge.send(
+      "hello, world!")})
+
+nameFunction.andRun(
+  "hello-world",
+  ["one:browser-bridge"],
+  function(bridge) {
+    bridge.send(
+      "hello, world!")})
+
+defineModule(
+  "hello-world",
+  ["one:browser-bridge"],
+  function(bridge) {
+    bridge.send(
+      "hello, world!")})
 
 
-  // WEB FORM
+library.define(
+  "hello-world",
+  ["appeared-a-wild", "web-element"],
+  function(appearedAWild, webElement) {
+    appearedAWild(
+      "browser-bridge",
+      function(bridge) {
+        bridge.send(
+          webElement(
+          "hello, world"))})
 
-  var input = webElement(
-    "input",{
-    type: "text",
-    placeholder: "Type your hello and press enter",
-    name: "message"})
 
-  var form = webElement(
-    "form",{
-    method: "post",
-    action: "/hellos"},
-    input)
+library.using(
+  ["#browser-bridge"],
+  function(bridge) {
+    bridge.send("hello, world")})
 
-  var item = webElement.template(
-    "li")
 
-  var title = webElement(
+library.using(
+  ["a browser-bridge"],
+  function(bridge) {
+    bridge.send("hello, world")})
+
+
+nameFunction(
+  "hello-world",[
+  "appeared-a-wild",
+  "web-element"],
+  function (whenItAppears, webElement){
+    var heading = webElement(
+      "h1",
+      "hello, world!")
+    whenItAppears([
+      "browser-bridge"],
+      function(bridge){
+        bridge.send(heading)})
+
+
+function helloWorld(whenItAppears, webElement){
+  var heading = webElement(
     "h1",
-    "HELLO POST")
+    "hello, world!")
+  whenItAppears([
+    "browser-bridge"],
+    function(bridge){
+      bridge.send(heading)})
 
 
-  // HANDLE REQUESTS
 
-  appearedAWild(
-    "browser-bridge",
-    function(bridge) {
-      var list = webElement(
-        "ul",
-        messages.map(item))
 
-      bridge.send([
-        title,
-        list,
-        form])})
-}
+
+
+/////////////////////////////////////
+
+library.define(
+  "hello-world",[
+  "appeared-a-wild",
+  "web-element"],
+  function (appearedAWild, webElement){
+    var heading = webElement(
+      "h1",
+      "hello, world!")
+    appearedAWild([
+      "browser-bridge"],
+      function (bridge){
+        bridge.send(heading)})
+
+/////////////////////////////////////
+
+
+
+
+
+
+
+
