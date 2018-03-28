@@ -1,0 +1,257 @@
+<div style="font-family: courier; white-space: pre; font-size: 8px; column-count: 3">
+
+        function setIntroTokens(addHtml, isToken, lines, token1, token2, etc) {
+
+          var editable = lines.stay()
+          var dependencyCount = 3
+          var childPosition = 0
+          for(var i=dependencyCount; i&lt;arguments.length; i++) {
+            var expectedToken = arguments[i]
+            var node = editable.childNodes[childPosition]
+
+            var isExpectedToken = isToken(node, expectedToken)
+
+            if (!isExpectedToken) {
+              var classes = "token "+classFor(expectedToken)
+              if (expectedToken == "\"" || expectedToken == "function") {
+                classes += " open"
+              }
+              var html = "&lt;div class=\""+classes+"\"&gt;"+expectedToken+"&lt;/div&gt;"
+              if (node) {
+                addHtml.before(node, html)
+              } else {
+                addHtml.inside(editable, html)
+              }
+            }
+            childPosition++
+          }
+
+          while(node = editable.childNodes[childPosition]) {
+            if (isToken(node)) {
+              editable.removeChild(node)
+            } else {
+              break;
+            }
+          }
+        })
+
+        function setOutroTokens(addHtml, isToken, classFor, lines, token1, token2, etc) {
+          var args = arguments
+          var dependencyCount = 4
+          var lastDependency = arguments[dependencyCount - 1]
+          var tokenCount = arguments.length - dependencyCount
+          var tokenIndex = arguments.length - 1
+          var editable = lines.stay()
+          var childCount = editable.childNodes.length
+          var expectedToken = arguments[tokenIndex]
+
+          var testNodeIndex = childCount - 1
+
+          function nextToken() {
+            tokenIndex--
+            var token = args[tokenIndex]
+            if (token == "\u200b") {
+              tokenIndex--
+              var token = args[tokenIndex]
+            }
+            return token
+          }
+
+          do {
+
+            var classes = "token "+classFor(expectedToken)
+            if (expectedToken == "\"") {
+              classes += " close"
+            }
+            var html = "&lt;quote class=\""+classes+"\"&ft;"+expectedToken+"&lt;/quote&gt;"
+
+            if (testNodeIndex &gt;= 0) {
+              var node = editable.childNodes[testNodeIndex]
+
+              var isExpectedToken = isToken(node, expectedToken)
+
+              if (isExpectedToken) {
+                testNodeIndex--
+              } else {            
+                addHtml.after(node, html)
+              }
+
+            } else {
+              addHtml.firstIn(editable, html)
+            }
+
+            var expectedToken = nextToken()
+            var ranOutOfTokens = expectedToken == lastDependency
+          } while(!ranOutOfTokens)
+
+          while(node = editable.childNodes[testNodeIndex]) {
+            if (isToken(node)) {
+              editable.removeChild(node)
+              testNodeIndex--
+            } else {
+              break;
+            }
+          }
+
+        })
+
+
+
+    function setSelection(node, selectionStart) {
+      var range = document.createRange()
+      range.setStart(node, selectionStart)
+
+      var selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+
+    function moveAround(event) {
+      if (event.key == "Enter") {
+        event.preventDefault()
+        var editable = lines.down()
+        var text = document.createTextNode("\u200b")
+        editable.prepend(text)
+        setSelection(text, 0)
+      }
+    }
+
+
+
+        function parse(isToken, setIntroTokens, setOutroTokens, lines, setSelection, event) {
+
+          if (event.key == "Enter") {
+            return
+          }
+
+          var editable = lines.stay()
+          var editableText = editable.innerText
+
+          var introMatch = editableText.match(/^[\u200b\(\)\{\}\(\)]+/)
+          var noText = introMatch && introMatch[0].length == editableText.length
+
+          if (introMatch && !noText) {
+            var introTokens = splitString(introMatch[0])
+            var sliceStart = introTokens.length
+          } else {
+            var introTokens = []
+            var sliceStart = 0
+          }
+
+          var outroMatch = editableText.match(/[\u200b\(\)\{\}\(\)]+$/)
+          if (outroMatch) {
+            var outroTokens = splitString(outroMatch[0])
+            var sliceEnd = editableText.length - outroTokens.length
+          } else {
+            var outroTokens = []
+            var sliceEnd = editableText.length
+          }
+
+          var sliceLength = sliceEnd - sliceStart
+
+          editableText = editableText.slice(sliceStart, sliceLength)
+
+          if (editableText.length &lt; 1) {
+            return }
+
+          var emptyLine = editableText.length &lt; 1
+          var functionLiteral = !emptyLine && editableText.match(/^"?function([\s].*)$/)
+
+          var functionCall = !functionLiteral && editableText.match(/^"?(\w+)[(](.*)$/)
+
+          if (!functionCall && editableText.length > 0) {
+            var stringLiteral = editableText }
+
+          var gotFunctionTokenAlready = isToken(editable.childNodes[0], "function")
+
+          if (functionCall) {
+            var functionName = functionCall[1]
+            var remainder = functionCall[2]
+
+            setIntroTokens()
+            setOutroTokens("(")
+
+            var textNode = editable.childNodes[0]
+            textNode.textContent = functionName
+
+            var editable = lines.down()
+
+            firstToken(outroTokens, ")")
+            setOutroTokens.apply(null, outroTokens)
+            var text = document.createTextNode("\u200b")
+            editable.prepend(text)
+            setSelection(text, 0)
+
+          } else if (functionLiteral) {
+            var remainder = trimTrailingQuote(functionLiteral[1])
+
+            setIntroTokens("function")
+
+            setOutroTokens("(", ")", "{")
+
+            var textNode = editable.childNodes[1]
+
+            if (!gotFunctionTokenAlready) {
+              textNode.textContent = textNode.textContent.substr("function".length)
+
+              setSelection(textNode, textNode.textContent.length)
+            }
+
+            var editable = lines.down()
+            setOutroTokens("}")
+            lines.up()
+
+          } else if (stringLiteral) {
+            lines.setAttribute("kind", "string literal")
+            lines.setAttribute("string", stringLiteral)
+            console.log("text is", stringLiteral)
+            setIntroTokens("\"")
+
+            firstToken(outroTokens, "\"")
+            setOutroTokens.apply(null, outroTokens)
+          }
+
+          function firstToken(tokens, expectedToken) {
+            if (tokens[0] != expectedToken) {
+              tokens.unshift(expectedToken)
+            }
+          }
+
+          function trimTrailingQuote(text) {
+            var lastChar = text.substr(text.length - 1)
+            if (lastChar == "\"") {
+              return text.substr(0, text.length - 1)
+            } else {
+              return text
+            }
+          }
+
+          function splitString(string) {
+            var array = []
+            for(var i=0; i&lt;string.length; i++) {
+              array.push(string[i])
+            }
+            return array
+          }
+
+        })
+</div>
+<script>
+var node = document.querySelector("div")
+var lines = node.innerHTML.split("\n")
+lines = lines.map(function(line) {
+  return line
+    .replace("lines", "<span style=\"background: teal\">lines</span>")
+    .replace(/function ([a-zA-Z]+)/, "<span style=\"background: black; color: white\">function $1</span>")
+    .replace("setIntroTokens", "<span style=\"color: #a5a; font-weight: bold\">setIntroTokens</span>")
+    .replace("setOutroTokens", "<span style=\"color: #a5a; font-weight: bold\">setOutroTokens</span>")
+    .replace("editableText", "<span style=\"background: #faa\">editableText</span>")
+    .replace("setSelection", "<span style=\"color: blue; font-weight: bold\">setSelection</span>")
+    // .replace(/token/ig, "<span style=\"background: #aaf\">token</span>")
+})
+
+// lines = lines.filter(function(line) {
+//   return line.match("span")
+// })
+node.innerHTML = lines.join("\n")
+</script>
