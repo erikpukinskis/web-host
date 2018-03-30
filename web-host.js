@@ -1,102 +1,44 @@
 var library = require("module-library")(require)
 
 module.exports = library.export(
-  "web-host",
-  ["web-site", "browser-bridge", "web-element", "./voxel"],
-  function(WebSite, BrowserBridge, element, Voxel) {
-    
-    var host = new WebSite()
+  "web-host", [
+  library.ref(),
+  "browser-task",
+  "write-code",
+  "a-wild-universe-appeared",
+  "web-site", "an-expression", "javascript-to-ezjs"],
+  function(library, browserTask, writeCode, aWildUniverseAppeared, webSite, anExpression, javascriptToEzjs) {
 
-    function onSite(callback) {
-      var appServer = new WebSite()
-      host.use(appServer.app)
-      callback(appServer)
+    function webHost(host, moduleName) {
+
+      var universe = aWildUniverseAppeared("hello-world source tree")
+      var tree = anExpression.tree()
+      tree.logTo(universe, true)
+      universe.mute()
+
+      javascriptToEzjs(library.getSource(moduleName), tree)
+
+      // Editor
+
+      host.addRoute("get", "/edit/"+moduleName, writeCode(universe))
+
+      writeCode.prepareSite(host, universe)
+
+      // Host Interface
+
+      host.addRoute("get", "/host/"+moduleName, hostFromBrowser(universe, host))
+
+      var browser = browserTask(
+        host.url(
+          "/host/"+moduleName))
     }
 
-    var requestCallbacks = []
+    return webHost})
 
-    function onVoxel(callback) {
-      onRequest(passVoxel.bind(null, callback))
-    }
-
-    function passVoxel(callback, getBridge) {
-      var bridge = getBridge()
-      var voxel = new Voxel(bridge, host)
-      callback(voxel)
-    }
-
-    function onBridge(callback) {
-      onRequest(callIt.bind(null, callback))
-    }
-
-    function callIt(callback) { return callback() }
-
-    function onRequest(callback) {
-      try {
-        throw new Error("You called web-host.onRequest here:")
-      } catch(e) {
-        callback.calledAtStack = e.stack
-      }
-      requestCallbacks.push(callback)
-    }
-
-    host.addRoute("get", "/",
-      function(request, response) {
-
-        bridge = new BrowserBridge()
-
-        bridge.getSite = function() {
-          var appServer = new WebSite()
-          host.use(appServer.app)
-          return appServer
-        }
-
-        var voxels = []
-
-        function getPartial() {
-          var partial = bridge.partial()
-          voxels.push(partial)
-          return partial
-        }
-
-        getPartial.defineFunction = goop("defineFunction")
-        getPartial.send = goop("send")
-        getPartial.asap = goop("asap")
-
-        function goop(methodName) {
-          return function() {
-            throw new Error("web-host gave you a getBridge function. You did getBridge."+methodName+", but you probably meant to get a bridge:\n        var bridge = getBridge()\n        bridge."+methodName+"(...)\nCommon mistake.")
-          }
-        }
-
-        var id = request.params.id
-
-        requestCallbacks.forEach(
-          function(callback) {
-            try {
-              callback(getPartial)
-            } catch(e) {
-              console.log(callback.calledAtStack)
-              throw(e)
-            }
-          }
-        )
-        
-        var handler = bridge.requestHandler(voxels)
-
-        handler(request, response)
-      }
-    )
-
-    host.start(process.env.PORT || 1413)
-
-    return {
-      onSite: onSite,
-      onRequest: onRequest,
-      onBridge: onBridge,
-      onVoxel: onVoxel,
-    }
-
-  }
-)
-
+library.using(
+  ["web-host", "web-site", "./hello-world"],
+  function(hostApp, WebSite) {
+    debugger
+    var site = new WebSite()
+    site.start(1413)
+    hostApp(site, "hello-world")})

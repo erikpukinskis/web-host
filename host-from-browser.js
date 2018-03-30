@@ -5,6 +5,9 @@ module.exports = library.export(
   ["make-request", "./url-pattern"],
   function(makeRequest, UrlPattern) {
 
+    function hostFromBrowser(universeWithCode, site) {
+      return handler}
+
     var callbacksWaiting = []
     var listenersWaiting = []
 
@@ -65,8 +68,7 @@ module.exports = library.export(
         }
       }
 
-      throw new Error("No routes match "+path)
-    }
+      throw new Error("No routes match "+path)}
 
     function sendResponse(requestId, body) {
       makeRequest({
@@ -74,20 +76,16 @@ module.exports = library.export(
         path: "/responses/"+requestId,
         data: {
           body: body
-        }
-      })
+        }})
     }
 
     function bindListener(listenToSocket, callback) {
       var site = new SocketSite()
       callback(site)
-      listenToSocket(site.handleRequest.bind(site))
-    }
+      listenToSocket(site.handleRequest.bind(site))}
 
-    return {
-      onSite: onSite,
-      listen: listen,
-    }
-  }
-)
 
+    function handler(request, response) {
+      response.send("this should host a site")}
+
+    return hostFromBrowser})

@@ -29,7 +29,7 @@ module.exports = library.export(
 
       SingleUseSocket.installOn(baseServer)
 
-      baseServer.addRoute("get", "/sites/:siteId.js", function(request, response) {
+      baseServer.addRoute("get", "/servers/:siteId.js", function(request, response) {
         var siteId = request.params.siteId
         ensureValidSite(siteId)
         response.send(sites.getSource(siteId))
@@ -62,7 +62,7 @@ module.exports = library.export(
         )
 
         bridge.addToHead(
-          element("script", {src: "/sites/"+siteId+".js"}).html())
+          element("script", {src: "/servers/"+siteId+".js"}).html())
 
         bridge.forResponse(response).send()
       })

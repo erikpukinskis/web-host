@@ -14,6 +14,15 @@ library.using(
   function(puppeteer, WebSite, fs, SiteServer) {
 
     var baseSite = new WebSite()
+    baseSite.start(3002)
+
+
+    var sites = new SiteServer(baseSite)
+    
+    sites.host("hello-world", fs.readFileSync("hello-world.js"))
+
+
+    var launchedBrowser
 
     baseSite.addRoute("get", "/kill", function(request, response) {
       response.send("dying...")
@@ -23,11 +32,13 @@ library.using(
       })
     })
 
-    var sites = new SiteServer(baseSite)
-    
-    sites.host("hello-world", fs.readFileSync("hello-world.js"))
+    // createBrowserContext for security: 
+    //  https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createBrowserContext
+    // https://github.com/cyrus-and/chrome-remote-interface/issues/118
 
-    baseSite.start(3002)
+    // Streaming HTTP server interfaces:
+    // http://www.apachetutor.org/dev/brigades
+    // https://hexdocs.pm/raxx/Raxx.html
 
     puppeteer.launch().then(function(browser) {
       launchedBrowser = browser
