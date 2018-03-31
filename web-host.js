@@ -5,6 +5,8 @@ var library = require("module-library")(require)
 // Maybe most of what's in here right now moves into write-code. Write code should probably just own the universe, the saving, etc, and web-host will just send this page, include write-code, and bind the two together with the getSource callback
 
 
+// But maybe on some level, web-host is destined to always emit functionality to other packages, continually drying up. Maybe it's more of an idea than a responsibility. The idea that a package could be hosted on the web and interact with other packages.
+
 
 module.exports = library.export(
   "web-host", [
