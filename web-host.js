@@ -6,7 +6,7 @@ module.exports = library.export(
   "browser-task",
   "write-code",
   "a-wild-universe-appeared",
-  "web-site", "an-expression", "javascript-to-ezjs"],
+  "web-site", "an-expression", "javascript-to-ezjs", "./host-from-browser"],
   function(library, browserTask, writeCode, aWildUniverseAppeared, webSite, anExpression, javascriptToEzjs) {
 
     function webHost(host, moduleName) {
@@ -18,15 +18,37 @@ module.exports = library.export(
 
       javascriptToEzjs(library.getSource(moduleName), tree)
 
+
       // Editor
 
-      host.addRoute("get", "/edit/"+moduleName, writeCode(universe))
+      writeCode.prepareSite(
+        host,
+        universe,
+        "hello-world")
 
-      writeCode.prepareSite(host, universe)
+      host.addRoute(
+        "get",
+        "/edit/"+moduleName,
+        function(request, response) {
+          var bridge = new BrowserBridge().forResponse(response)
+
+          writeCode(
+            bridge,
+            treeBinding,
+            tree)})
+
 
       // Host Interface
 
-      host.addRoute("get", "/host/"+moduleName, hostFromBrowser(universe, host))
+      baseServer.addRoute("get", "/host/hello-world", function(request, response) {
+        var bridge = new BrowserBridge().forResponse(response)
+        function getSource() {
+          tree.toJavaScript()
+        }        
+        serverRunnerPage(bridge, "hello-world", getSource)})
+
+
+      // Provision a Sysadmin
 
       var browser = browserTask(
         host.url(
@@ -37,8 +59,7 @@ module.exports = library.export(
 
 library.using(
   ["web-host", "web-site", "./hello-world"],
-  function(hostApp, WebSite) {
-    debugger
+  function(webHost, WebSite) {
     var site = new WebSite()
     site.start(1413)
-    hostApp(site, "hello-world")})
+    webHost(site, "hello-world")})

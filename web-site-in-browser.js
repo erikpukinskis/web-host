@@ -1,39 +1,25 @@
 var library = require("module-library")(require)
 
 module.exports = library.export(
-  "host-from-browser",
+  "web-site-in-browser",
   ["make-request", "./url-pattern"],
   function(makeRequest, UrlPattern) {
 
-    function hostFromBrowser(universeWithCode, site) {
-      return handler}
+    // This is running in the browser!
 
-    var callbacksWaiting = []
-    var listenersWaiting = []
-
-    function onSite(callback) {
-      if (listenersWaiting.length > 0) {
-        bindListener(listenersWaiting.pop(), callback)
-      } else {
-        callbacksWaiting.push(callback)
-      }
+    function handleRequestsInBrowser(listenForRequests) {
+      // booted up with a listen function that gets requests sent from the baseServer
     }
 
-    function listen(listenToSocket) {
-      if (callbacksWaiting.length > 0) {
-        bindListener(listenToSocket, callbacks.pop())
-      } else {
-        listenersWaiting.push(listenToSocket)
-      }
-    }
-
-    function SocketSite() {
+    function WebSiteInBrowser() {
       this.patterns = []
       this.handlers = []
       this.verbs = []
+
+      this.handleRequest = this.handleRequest.bind(this)
     }
 
-    SocketSite.prototype.addRoute = function(verb, pattern, handler) {
+    WebSiteInBrowser.prototype.addRoute = function(verb, pattern, handler) {
       verb = verb.toLowerCase()
       if (verb != "get" && verb != "post") {
         throw new Error("First argument to webSite.addRoute should be an HTTP verb, either \"get\" or \"post\"")
@@ -48,7 +34,7 @@ module.exports = library.export(
       this.handlers.push(handler)
     }
 
-    SocketSite.prototype.handleRequest = function(message) {
+    WebSiteInBrowser.prototype.handleRequest = function(message) {
       var data = JSON.parse(message)
 
       var requestId = parseInt(data.requestId)
@@ -79,13 +65,4 @@ module.exports = library.export(
         }})
     }
 
-    function bindListener(listenToSocket, callback) {
-      var site = new SocketSite()
-      callback(site)
-      listenToSocket(site.handleRequest.bind(site))}
-
-
-    function handler(request, response) {
-      response.send("this should host a site")}
-
-    return hostFromBrowser})
+    return WebSiteInBrowser})
