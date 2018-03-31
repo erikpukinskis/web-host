@@ -1,28 +1,8 @@
 var library = require("module-library")(require)
 
 
-// Where does this go?
 
-
-//    var callbacksWaiting = []
-//    var listenersWaiting = []
-//
-//    function onSite(callback) {
-//      if (listenersWaiting.length > 0) {
-//        bindListener(listenersWaiting.pop(), callback)
-//      } else {
-//        callbacksWaiting.push(callback)
-//      }
-//    }
-//
-//    function listen(listenToSocket) {
-//      if (callbacksWaiting.length > 0) {
-//        bindListener(listenToSocket, callbacks.pop())
-//      } else {
-//        listenersWaiting.push(listenToSocket)
-//      }
-//    }
-
+// This is probably the meat of web-host eventually. And maybe most of what's in web-host right now moves into write-code. Write code should probably just own the universe, the saving, etc, and web-host will just send this page, include write-code, and bind the two together with the getSource callback
 
 
 
@@ -141,3 +121,30 @@ module.exports = library.export(
     return serverRunnerPage
   }
 )
+
+
+
+
+
+// Where does this go?
+
+
+//    var callbacksWaiting = []
+//    var listenersWaiting = []
+//
+//    function onSite(callback) {
+//      if (listenersWaiting.length > 0) {
+//        bindListener(listenersWaiting.pop(), callback)
+//      } else {
+//        callbacksWaiting.push(callback)
+//      }
+//    }
+//
+//    function listen(listenToSocket) {
+//      if (callbacksWaiting.length > 0) {
+//        bindListener(listenToSocket, callbacks.pop())
+//      } else {
+//        listenersWaiting.push(listenToSocket)
+//      }
+//    }
+

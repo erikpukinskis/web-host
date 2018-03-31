@@ -1,5 +1,17 @@
 var library = require("module-library")(require)
 
+
+
+// This file will almost certainly move into web-site
+
+
+// It maybe will become similar to module-library where there is web-site.js and node-web-site.js, plus browser-web-site.js.
+
+// ... which module-library doesn't have, but I think maybe bridge-module becomes that and moves into module-library.
+
+
+
+
 module.exports = library.export(
   "web-site-in-browser",
   ["make-request", "./url-pattern"],
